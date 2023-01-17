@@ -1,5 +1,10 @@
-var builder = WebApplication.CreateBuilder(args);
+using FilmeAPI.Data;
+using Microsoft.EntityFrameworkCore;
 
+var builder = WebApplication.CreateBuilder(args);
+var connectionString = builder.Configuration.GetConnectionString("FilmeConnection");
+
+builder.Services.AddDbContext<FilmeContext>(opts => opts.UseSqlServer(connectionString));
 // Add services to the container.
 
 builder.Services.AddControllers();
