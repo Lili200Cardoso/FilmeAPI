@@ -11,6 +11,9 @@
   "profiles": {
     "FilmeAPI": {
       "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "swagger",
       "applicationUrl": "https://localhost:7030;http://localhost:5030",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
@@ -18,6 +21,8 @@
     },
     "IIS Express": {
       "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
