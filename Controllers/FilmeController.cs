@@ -2,6 +2,7 @@
 using FilmeAPI.Data;
 using FilmeAPI.Data.Dtos;
 using FilmeAPI.Models;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FilmeAPI.Controllers;
@@ -52,7 +53,7 @@ public class FilmeController : ControllerBase
     [HttpPut("{id}")]
     public IActionResult AtualizaFilme(int id, [FromBody] UpdateFilmeDto filmeDto)
     {
-        Filme filme = _context.Filmes.FirstOrDefault(filme => filme.Id == id);
+        var filme = _context.Filmes.FirstOrDefault(filme => filme.Id == id);
         if(filme == null)
         {
             return NotFound();
@@ -63,10 +64,33 @@ public class FilmeController : ControllerBase
         return NoContent();
     }
 
+    [HttpPatch("{id}")]
+    public IActionResult AtualizaFilmeParcial(int id, JsonPatchDocument<UpdateFilmeDto> patch)
+    {
+        var filme = _context.Filmes.FirstOrDefault(filme => filme.Id == id);
+        if (filme == null) return NotFound();
+
+        var filmeParaAtualizar = _mapper.Map<UpdateFilmeDto>(filme);
+        //Aplicando as mudanças solicitadas pelo patch:
+        patch.ApplyTo(filmeParaAtualizar, ModelState);
+        //Como não temos como utilizar as validaçóes do DataAnotaccion, devemos verificar na mão se
+        //o mesmo é válido...
+        //Se o filme não for valido:
+        if(!TryValidateModel(filmeParaAtualizar))
+        {
+            return ValidationProblem(ModelState);
+        }
+        //se for valido:
+        _mapper.Map(filmeParaAtualizar, filme);
+        _context.SaveChanges();
+        return NoContent();
+    }
+
+
     [HttpDelete("{id}")]
     public IActionResult DeletaFilme(int id)
     {
-        Filme filme = _context.Filmes.FirstOrDefault(filme => filme.Id == id);
+        var filme = _context.Filmes.FirstOrDefault(filme => filme.Id == id);
         if (filme == null)
         {
             return NotFound();
